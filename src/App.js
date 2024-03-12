@@ -1,9 +1,11 @@
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import Header from "./component/Header";
 import Todos from "./component/Todos";
 import Footer from "./component/Footer";
 import AddTodo from "./component/AddTodo";
 import { useState } from "react";
+import { routes } from "./routes";
+import { useRoutes } from "react-router-dom";
 
 const App = () => {
   let initTodos;
@@ -33,8 +35,11 @@ const App = () => {
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
+
+  const elements = useRoutes(routes);
   return (
     <>
+      <Suspense>{elements}</Suspense>
       <Header title="TODO LIST" />
       <AddTodo addTodo={addTodo} />
       <Todos todos={todos} onDelete={onDelete} />
