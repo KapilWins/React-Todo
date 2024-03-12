@@ -5,4 +5,5 @@ export const routes = [
     path: "/about",
     element: <About />,
   },
+  //
 ];
