@@ -6,6 +6,7 @@ import AddTodo from "./component/AddTodo";
 import { useState } from "react";
 import { routes } from "./routes";
 import { useRoutes } from "react-router-dom";
+import "./component/app.css";
 
 const App = () => {
   let initTodos;
