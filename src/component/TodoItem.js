@@ -1,6 +1,6 @@
 import React from "react";
 
-const TodoItem = ({ todo, onDelete }) => {
+const TodoItem = ({ todo, onDelete, onEdit }) => {
   return (
     <div>
       <h4>{todo.title}</h4>
@@ -12,6 +12,15 @@ const TodoItem = ({ todo, onDelete }) => {
         }}
       >
         Delete
+      </button>
+
+      <button
+        className="btn btn-sm btn-danger"
+        onClick={() => {
+          onEdit(todo);
+        }}
+      >
+        Edit
       </button>
     </div>
   );
