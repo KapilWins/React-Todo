@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Drawer, Button, Box, TextField } from "@mui/material";
 import "./app.css";
 import Todos from "./TodoDetails";
-import Joi from "joi"; // Import Joi
+import { validateTodo } from "./TodoSchema";
 
 const AddTodo = (props) => {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [order, setOrder] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false); // State for controlling the drawer visibility
+  const [editTodo, setEditTodo] = useState(null); // State to hold the todo being edited
 
   // Retrieve todos from localStorage or use an empty array as default
   const [todos, setTodos] = useState(() => {
@@ -25,17 +26,27 @@ const AddTodo = (props) => {
     e.preventDefault();
     // Perform Joi validation before proceeding
     const validationResult = validateTodo({ title, desc, order });
-
     if (validationResult.error) {
       const errorMessages = {};
       validationResult.error.details.forEach((err) => {
         errorMessages[err.path[0]] = err.message; // Store error message by field
       });
       setErrors(errorMessages); // Set the errors state
-      return;
     } else {
       setErrors(""); // Clear error if validation passes
-      addTodo({ title, desc, order });
+      if (editTodo) {
+        // Update existing todo
+        const updatedTodos = todos.map((todo) => {
+          debugger;
+          return todo.id === editTodo.id
+            ? { ...todo, title, description: desc, order }
+            : todo;
+        });
+        setTodos(updatedTodos);
+      } else {
+        // Add new todo
+        addTodo({ title, desc, order });
+      }
       setTitle(""); // Reset form fields after submit
       setDesc("");
       setOrder("");
@@ -43,26 +54,28 @@ const AddTodo = (props) => {
     }
   };
 
-  // Joi validation schema
-  const validateTodo = (todo) => {
-    const schema = Joi.object({
-      title: Joi.string().min(3).required(),
-      desc: Joi.string().min(5).required().messages({
-        "string.min": "Description must be at least 5 characters long.",
-        "any.required": "Description is required.",
-      }),
-      order: Joi.number().integer().min(1).required(),
-    });
-
-    return schema.validate(todo, { abortEarly: false });
-  };
-
   const toggleDrawer = () => {
-    setOpenDrawer(!openDrawer); // Toggle the drawer visibility
+    setOpenDrawer(!openDrawer);
+    if (openDrawer) {
+      // Reset form data when closing the drawer
+      setTitle("");
+      setDesc("");
+      setOrder("");
+      setEditTodo(null); // Clear the editing todo
+    }
   };
 
   const onDelete = (todo) => {
     setTodos(todos.filter((x) => x !== todo));
+  };
+
+  // This function will handle the Edit button click
+  const handleEdit = (todo) => {
+    setTitle(todo.title);
+    setDesc(todo.description);
+    setOrder(todo.order);
+    setEditTodo(todo); // Set the todo for editing
+    setOpenDrawer(true); // Open the drawer
   };
 
   const addTodo = async (todo) => {
@@ -94,7 +107,7 @@ const AddTodo = (props) => {
       >
         Add Todo
       </Button>
-      <Todos todos={todos} onDelete={onDelete} />
+      <Todos todos={todos} onDelete={onDelete} onEdit={handleEdit} />
       {/* Drawer Component */}
       <Drawer
         anchor="right"
@@ -111,7 +124,7 @@ const AddTodo = (props) => {
         }}
       >
         <Box sx={{ width: 250, padding: 2 }}>
-          <h3>Add Todo</h3>
+          <h3>{editTodo ? "Edit Todo" : "Add Todo"}</h3>
 
           <form onSubmit={submit}>
             <div className="mb-3">

@@ -13,7 +13,12 @@ const Todos = (props) => {
         : props.todos.map((todo) => {
             return (
               <>
-                <TodoItem todo={todo} key={todo.id} onDelete={props.onDelete} />
+                <TodoItem
+                  todo={todo}
+                  key={todo.id}
+                  onDelete={props.onDelete}
+                  onEdit={props.onEdit}
+                />
                 <hr />
               </>
             );
