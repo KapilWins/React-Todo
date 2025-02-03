@@ -1,30 +1,31 @@
 import React from "react";
 import TodoItem from "./TodoItem";
 
-const Todos = (props) => {
-  const todosStyle = {
-    minHeight: "70vh",
-  };
+const TodoList = ({ todos, onDelete, onEdit }) => {
   return (
-    <div className="container my-3" style={todosStyle}>
-      <h3 className="text-center">Todos List</h3>
-      {!props?.todos?.length
-        ? "No todo here"
-        : props.todos.map((todo) => {
-            return (
-              <>
-                <TodoItem
-                  todo={todo}
-                  key={todo.id}
-                  onDelete={props.onDelete}
-                  onEdit={props.onEdit}
-                />
-                <hr />
-              </>
-            );
-          })}
-    </div>
+    <table className="table table-bordered">
+      <thead className="table-secondary">
+        {" "}
+        {/* Add grey background for header */}
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {todos.map((todo) => (
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            onDelete={onDelete}
+            onEdit={onEdit}
+          />
+        ))}
+      </tbody>
+    </table>
   );
 };
 
-export default Todos;
+export default TodoList;
